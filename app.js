@@ -16,12 +16,14 @@ const loginRouter = require('./routes/login');
 const adminRouter = require('./routes/admin');
 const productRouter = require('./routes/product');
 const storeRouter = require('./routes/store');
+const registerRouter = require('./routes/register');
 
 app.use('/user', userRouter);
 app.use('/login', loginRouter);
 app.use('/admin', adminRouter);
 app.use('/product', productRouter);
 app.use('/store', storeRouter);
+app.use('/register', registerRouter);
 
 // ------------------- 미들웨어 -------------------
 app.get('/', (req, res) => {

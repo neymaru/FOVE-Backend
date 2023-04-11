@@ -1,10 +1,12 @@
 const router = require('express').Router();
-const { registerUser } = require('../controllers/userController');
+const { registerUser, checkDuplicateId } = require('../controllers/userController');
 
-router.get('/', (req, res) => {
-  res.send('회원가입 페이지입니다.');
-});
+// router.get('/', (req, res) => {
+//   res.send('회원가입 페이지입니다.');
+// });
 
-router.post('/', registerUser);
+// req.body 는 get 방식에서 사용 못 함
+router.post('/', registerUser); // 회원 가입
+router.post('/checkId', checkDuplicateId); // 아이디 중복 확인
 
 module.exports = router;
