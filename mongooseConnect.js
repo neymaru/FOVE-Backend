@@ -5,7 +5,10 @@ const mongoose = require('mongoose');
 const { MDB_URI } = process.env;
 const connect = async () => {
   try {
-    await mongoose.connect(MDB_URI);
+    await mongoose.connect(MDB_URI, {
+      dbName: 'test',
+      useNewUrlParser: true,
+    });
     console.log('몽구스 접속 성공!');
 
     mongoose.connection.on('error', (err) => {
