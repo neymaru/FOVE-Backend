@@ -81,6 +81,18 @@ const getProductsByCategory = async (req, res) => {
   }
 };
 
+// 특정 상품 조회하기
+const getProductDetail = async (req, res) => {
+  try {
+    const productId = req.params.productId;
+    const product = await Product.find({ _id: productId });
+    res.status(200).json(product);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('조회 실패');
+  }
+};
+
 // 전체 주문 리스트 불러오기
 // const getOrderList = {};
 
@@ -89,4 +101,5 @@ module.exports = {
   getAllProducts,
   getNewProducts,
   getProductsByCategory,
+  getProductDetail,
 };
