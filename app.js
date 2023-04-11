@@ -24,6 +24,7 @@ app.use('/admin', adminRouter);
 app.use('/product', productRouter);
 app.use('/store', storeRouter);
 app.use('/register', registerRouter);
+app.use('/uploads', express.static('uploads'));
 
 // ------------------- 미들웨어 -------------------
 app.get('/', (req, res) => {
