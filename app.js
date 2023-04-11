@@ -13,14 +13,15 @@ app.use(express.urlencoded({ extended: false }));
 // ------------------- 라우터 -------------------
 const userRouter = require('./routes/user');
 const loginRouter = require('./routes/login');
-const productRouter = require('./routes/product');
 const adminRouter = require('./routes/admin');
+const productRouter = require('./routes/product');
+const storeRouter = require('./routes/store');
 
 app.use('/user', userRouter);
 app.use('/login', loginRouter);
-app.use('/product', productRouter);
 app.use('/admin', adminRouter);
-app.use('/list', productRouter);
+app.use('/product', productRouter);
+app.use('/store', storeRouter);
 
 // ------------------- 미들웨어 -------------------
 app.get('/', (req, res) => {
