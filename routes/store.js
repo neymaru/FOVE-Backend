@@ -1,5 +1,10 @@
 const router = require('express').Router();
-const { getAllProducts, getNewProducts, getProductsByCategory } = require('../controllers/productController');
+const {
+  getAllProducts,
+  getNewProducts,
+  getProductsByCategory,
+  getProductDetail,
+} = require('../controllers/productController');
 
 // /store
 router.get('/', getAllProducts);
@@ -30,5 +35,8 @@ router.get('/new', getNewProducts);
 
 // /store/카테고리
 router.get('/category/:category', getProductsByCategory);
+
+// 특정 상품 상세페이지
+router.get('/productId/:productId', getProductDetail);
 
 module.exports = router;

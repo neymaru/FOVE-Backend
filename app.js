@@ -27,7 +27,7 @@ app.use('/register', registerRouter);
 
 // ------------------- 미들웨어 -------------------
 app.get('/', (req, res) => {
-  res.send('FOVE HOME');
+  res.send('HOME');
 });
 
 // ------------------- DB 연결 -------------------
