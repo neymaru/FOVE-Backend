@@ -6,8 +6,6 @@ const {
   getProductDetail,
 } = require('../controllers/productController');
 
-const { addProductToCart } = require('../controllers/cartController');
-
 // /store
 router.get('/', getAllProducts);
 
@@ -40,8 +38,5 @@ router.get('/:category', getProductsByCategory);
 
 // 특정 상품 상세페이지
 router.get('/productId/:productId', getProductDetail);
-
-// 장바구니 상품 추가
-router.post('/productId/:productId', addProductToCart);
 
 module.exports = router;

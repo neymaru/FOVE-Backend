@@ -11,6 +11,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // ------------------- 라우터 -------------------
+const cartRouter = require('./routes/cart');
 const userRouter = require('./routes/user');
 const loginRouter = require('./routes/login');
 const adminRouter = require('./routes/admin');
@@ -18,6 +19,7 @@ const productRouter = require('./routes/product');
 const storeRouter = require('./routes/store');
 const registerRouter = require('./routes/register');
 
+app.use('/', cartRouter);
 app.use('/user', userRouter);
 app.use('/login', loginRouter);
 app.use('/admin', adminRouter);
@@ -27,9 +29,6 @@ app.use('/register', registerRouter);
 app.use('/uploads', express.static('uploads'));
 
 // ------------------- 미들웨어 -------------------
-app.get('/', (req, res) => {
-  res.send('HOME');
-});
 
 // ------------------- DB 연결 -------------------
 app.listen(PORT, () => {

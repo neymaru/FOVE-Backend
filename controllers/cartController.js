@@ -57,6 +57,22 @@ const addProductToCart = async (req, res) => {
   }
 };
 
+// 장바구니 정보 조회(전체 상품 데이터, length)
+const getCartInfo = async (req, res) => {
+  try {
+    const cart = await Cart.findOne();
+    if (!cart) {
+      res.status(200).json({ products: cart.products, length: 0 });
+    } else {
+      res.status(200).json({ products: cart.products, length: cart.products.length });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json('조회 실패');
+  }
+};
+
 module.exports = {
   addProductToCart,
+  getCartInfo,
 };
