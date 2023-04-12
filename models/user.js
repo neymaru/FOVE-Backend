@@ -15,6 +15,7 @@ const userSchema = new Schema(
     createAt: { type: Date, default: Date.now }, // 가입일
     isActive: { type: Boolean, default: true }, // 활동 상태 여부(회원/탈퇴)
     isAdmin: { type: Boolean, default: false }, // 관리자 여부
+    cartId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // 장바구니 코드
   },
   {
     collection: 'user', // 컬렉션 이름 설정
