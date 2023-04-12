@@ -1,43 +1,40 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
-
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   },
   name: {
-    type: String, 
-  },
-  address : {
-    type: String 
-  },
-  message : {
     type: String,
-
   },
-  phoneNumber : {
+  address: {
     type: String,
-
   },
-  points : {
+  message: {
+    type: String,
+  },
+  phoneNumber: {
+    type: String,
+  },
+  points: {
     type: Number,
-    default: 0 
+    default: 0,
   },
-  totalPrice : {
+  totalPrice: {
     type: Number,
-    default: 0 
+    default: 0,
   },
-  isPaid : {
+  isPaid: {
     type: Boolean,
     default: false,
   },
-  orderDate : {
+  orderDate: {
     type: Date,
     default: Date.now,
   },
 
-  products : [
+  products: [
     {
       productId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -63,7 +60,7 @@ const orderSchema = new mongoose.Schema({
         type: Number,
       },
     },
-  ]
+  ],
 
   // productIds: [
   //   {
