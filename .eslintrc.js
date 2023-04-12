@@ -13,6 +13,6 @@ module.exports = {
     ecmaVersion: 'latest',
   },
   env: {
-    es6: true,
+    es6: false,
   },
 };
