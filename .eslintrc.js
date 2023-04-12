@@ -8,6 +8,7 @@ module.exports = {
     'nonblock-statement-body-position': 'off',
     'import/no-extraneous-dependencies': 'off',
     curly: 'off',
+    'max-len': ['error', { code: 120 }],
   },
   parserOptions: {
     ecmaVersion: 'latest',

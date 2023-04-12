@@ -42,8 +42,6 @@ router.get('/:category', getProductsByCategory);
 router.get('/productId/:productId', getProductDetail);
 
 // 장바구니 상품 추가
-router.get('/productId/:productId', (req, res) => {
-  console.log(req.body);
-});
+router.post('/productId/:productId', addProductToCart);
 
 module.exports = router;

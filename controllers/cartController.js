@@ -3,27 +3,21 @@ const Cart = require('../models/cart');
 // 장바구니에 상품 추가
 const addProductToCart = async (req, res) => {
   try {
-    // const { userId, productName, color, size, img, quantity, price } = req.body;
-    console.log(req.body);
-    // console.log(typeof price);
-    // console.log(userId);
-    // const unitSumPrice = Number(price) * Number(quantity); // 상품별 수량에 따른 금액 합계
+    const { productName, img, price, size, color, quantity } = req.body;
 
-    // const cart = new Cart({
-    //   userId,
-    //   products: [
-    //     {
-    //       productName,
-    //       img,
-    //       price,
-    //       size,
-    //       color,
-    //       quantity,
-    //       unitSumPrice,
-    //     },
-    //   ],
-    // });
-    // await cart.save();
+    // 장바구니 내 상품별 금액 합계
+    const products = req.body.products.map((product) => ({
+      ...product,
+      unitSumPrice: product.price * product.quantity,
+    }));
+
+    const cart = new Cart({ products });
+
+    const cartTotalPrice = products.reduce((total, product) => total + product.unitSumPrice, 0);
+    cart.cartTotalPrice = cartTotalPrice;
+
+    await cart.save();
+    res.status(200).send('장바구니 담기 성공');
   } catch (err) {
     console.error(err);
     res.status(500).send('장바구니 담기 실패');

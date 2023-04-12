@@ -1,6 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable object-curly-newline */
-/* eslint-disable dot-notation */
 require('../mongooseConnect');
 const Product = require('../models/product');
 
