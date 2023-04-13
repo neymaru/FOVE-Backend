@@ -6,6 +6,11 @@ const {
   getProductDetail,
 } = require('../controllers/productController');
 
+<<<<<<< Updated upstream
+=======
+const { addProductToCart } = require('../controllers/cartController');
+const { addOrder } = require('../controllers/orderController');
+>>>>>>> Stashed changes
 // /store
 router.get('/', getAllProducts);
 
@@ -39,4 +44,11 @@ router.get('/:category', getProductsByCategory);
 // 특정 상품 상세페이지
 router.get('/productId/:productId', getProductDetail);
 
+<<<<<<< Updated upstream
+=======
+// 장바구니 상품 추가
+router.post('/productId/:productId', addProductToCart);
+router.post('/order', addOrder);
+
+>>>>>>> Stashed changes
 module.exports = router;
