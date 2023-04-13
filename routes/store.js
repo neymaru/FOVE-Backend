@@ -6,17 +6,22 @@ const {
   getProductDetail,
 } = require('../controllers/productController');
 
-const { addProductToCart } = require('../controllers/cartController');
-const { addOrder } = require('../controllers/orderController');
-// /store
-router.get('/', getAllProducts);
+// 'store' 페이지 /store
+router.get('/', getAllProducts); // 전체 상품 데이터 가져오기
 
-// /store/all
-router.get('/all', getAllProducts);
+// 전체상품 보기 /store/all
+router.get('/all', getAllProducts); //  전체 상품 데이터 가져오기
 
-// /store/new
-router.get('/new', getNewProducts);
+// 신상품 보기 /store/new
+router.get('/new', getNewProducts); // 일정 기간 내 등록된 상품 데이터 가져오기
 
+// 카테고리별 상품 보기 /store/"카테고리명"
+router.get('/:category', getProductsByCategory); // 카테고리에 따른 상품 데이터 가져오기
+
+// 특정상품 상세페이지 /store/productId/"상품고유코드"
+router.get('/productId/:productId', getProductDetail); // 특정 상품 데이터 가져오기
+
+// ------------------- 예비 코드 -------------------
 // /store/beanie
 // router.get('/beanie', getBeanieProducts);
 
@@ -34,15 +39,5 @@ router.get('/new', getNewProducts);
 // router.get('/windbreaker', (req, res) => {
 //   res.send('윈드브레이커 페이지입니다.');
 // });
-
-// /store/카테고리
-router.get('/:category', getProductsByCategory);
-
-// 특정 상품 상세페이지
-router.get('/productId/:productId', getProductDetail);
-
-// 장바구니 상품 추가
-router.post('/productId/:productId', addProductToCart);
-router.post('/order', addOrder);
 
 module.exports = router;
