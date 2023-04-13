@@ -6,7 +6,7 @@ const {
   getProductDetail,
 } = require('../controllers/productController');
 
-const { sendOrder } = require('../controllers/orderController');
+const { sendOrder, addOrder } = require('../controllers/orderController');
 
 // 'store' 페이지 /store
 router.get('/', getAllProducts); // 전체 상품 데이터 가져오기
@@ -26,6 +26,8 @@ router.get('/productId/:productId', getProductDetail); // 특정 상품 데이�
 // 상품 바로 주문하기  /store/sendOrder
 router.post('/sendOrder', sendOrder);
 
+// 상품 주문
+router.post('/order', addOrder);
 // ------------------- 예비 코드 -------------------
 // /store/beanie
 // router.get('/beanie', getBeanieProducts);
