@@ -51,6 +51,50 @@ const getCartInfo = async (req, res) => {
   }
 };
 
+// 장바구니 상품 한개 삭제
+const removeCartItem = async (req, res) => {
+  try {
+    const { productId } = req.params;
+
+    const cart = await Cart.findOne();
+
+    if (!cart) {
+      res.status(404).json('장바구니 없음');
+      return;
+    }
+
+    const updatedCart = await Cart.findOneAndUpdate(
+      { _id: cart._id },
+      { $pull: { products: { _id: productId } } },
+      { new: true }, // 업데이트된 내용 반환을 위해 new: true
+    );
+
+    res.status(200).json({ messege: '장바구이에서 해당 상품 삭제 성공', updatedCart });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json('알 수 없는 에러');
+  }
+};
+
+// 장바구니 비우기
+const cleanCart = async (req, res) => {
+  try {
+    const cart = await Cart.findOne();
+
+    if (!cart) {
+      res.status(404).json('장바구니 없음');
+      return;
+    }
+
+    const updatedCart = await Cart.findOneAndUpdate({ _id: cart._id }, { $set: { products: [] } }, { new: true });
+
+    res.status(200).json({ messege: '장바구이에서 비우기 성공', updatedCart });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json('장바구니 비우기 실패');
+  }
+};
+
 // ------------------- 예비 코드 -------------------
 // 장바구니에 상품 추가
 // const addProductToCart = async (req, res) => {
@@ -79,4 +123,6 @@ const getCartInfo = async (req, res) => {
 module.exports = {
   addProductToCart,
   getCartInfo,
+  removeCartItem,
+  cleanCart,
 };

@@ -4,9 +4,9 @@ const Product = require('../models/product');
 // 상품 등록
 const createProduct = (req, res) => {
   try {
-    const { productName, price, size, color, category, quantity, detail, createAt } = req.body;
-    // const { productName, price, size, color, category, quantity, detail, createAt } = JSON.parse(req.body.data);
+    const { productName, price, size, color, category, quantity, detail, createAt } = JSON.parse(req.body.data);
     // req.body의 data 필드를 JSON으로 구문 분석하고 결과 객체를 분해하여 변수명과 일치하는 key 값의 값들을 각 변수들에 저장
+    // 프론트에서 data라는 이름으로 JSON 형태로 보내기 때문에 req.body.data로 받아서 JSON.parse() 함수를 이용해 객체형태로 parsing
 
     const img = req.files.map((el) => el.originalname);
     // req.files 배열의 요소들을 각 파일의 원본명으로 매핑하여 'img' 라는 이름의 새 배열에 저장
