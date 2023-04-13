@@ -4,20 +4,36 @@ const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
   user: { type: mongoose.Types.ObjectId, ref: 'User' }, // User 모델의 ObjectId를 참조
-  products: [
-    {
-      productName: { type: String },
-      img: { type: String },
-      price: { type: Number },
-      size: { type: String },
-      color: { type: String },
-      quantity: { type: Number },
-      unitSumPrice: { type: Number },
-    },
-  ],
+  products: {
+    productName: { type: String },
+    img: { type: String },
+    price: { type: Number },
+    size: { type: String },
+    color: { type: String },
+    quantity: { type: Number },
+    unitSumPrice: { type: Number },
+    sumPrice: { type: Number },
+  },
   message: {
     type: String,
   },
+  // status: {
+  //   type: String,
+  //   enum: ['ordered', 'shipping', 'delivered'],
+  //   default: 'ordered',
+  // },
+  status: {
+    type: String,
+  },
+  paymentMethod: {
+    type: String,
+  },
+
+  // paymentMethod: {
+  //   type: String,
+  //   enum: ['nobankbook', 'deposit', 'creditcard'],
+  //   default: 'nobankbook',
+  // },
   // cartTotalPrice: { type: Number },
 
   // userId: {
