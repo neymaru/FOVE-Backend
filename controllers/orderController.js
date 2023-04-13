@@ -1,18 +1,40 @@
 const Order = require('../models/order');
-const User = require('../models/user');
+// const User = require('../models/user');
 // const product = require('../models/product');
+
+const sendOrder = async (req, res) => {
+  try {
+    const { productName, img, price, size, color, quantity, unitSumPrice } = req.body;
+    const productInfo = {
+      productName,
+      img,
+      price,
+      size,
+      color,
+      quantity,
+      unitSumPrice,
+    };
+    res.send({ productInfo });
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+  // try {
+  //   const { productName, img, price, size, color, quantity, unitSumPrice } = req.body;
+  // } catch (err) {}
+};
 
 // 한개의 상품을 바로 주문할경우
 const addOrder = async (req, res) => {
   try {
-    const userId = '643540aa32e0fd94fa801757';
+    // const userId = '643540aa32e0fd94fa801757';
 
-    // useId 찾는 코드 나중에 넣기!!
-    // 사용자 정보 조회
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+    // // useId 찾는 코드 나중에 넣기!!
+    // // 사용자 정보 조회
+    // const user = await User.findById(userId);
+    // if (!user) {
+    //   return res.status(404).json({ message: 'User not found' });
+    // }
 
     // console.log('hi');
 
@@ -21,13 +43,13 @@ const addOrder = async (req, res) => {
     //   return res.status(404).json({ message: 'User not found' });
     // }
 
-    user.populate('name age').exec((err, u) => {
-      if (err) {
-        console.log(err);
-        return res.status(500).json({ message: 'Error occurred' });
-      }
-      return res.json(u);
-    });
+    // user.populate('name age').exec((err, u) => {
+    //   if (err) {
+    //     console.log(err);
+    //     return res.status(500).json({ message: 'Error occurred' });
+    //   }
+    //   return res.json(u);
+    // });
 
     // user.populate('name').execPopulate((err, u) => {
     //   if (err) return console.log('dd');
@@ -51,10 +73,11 @@ const addOrder = async (req, res) => {
     //   status: 'ordered', // 주문 상태 (ordered, shipping, delivered)
     // });
 
-    const { productName, img, price, size, color, quantity, message } = req.body;
+    const { productName, img, price, size, color, quantity, unitSumPrice, message, status, paymentMethod } = req.body;
     // const userId = '12345';
     // const userId = req.user._id;
 
+    const sumPrice = 100;
     const order = await Order.findOne();
     const product = {
       productName,
@@ -63,29 +86,36 @@ const addOrder = async (req, res) => {
       size,
       color,
       quantity,
+      unitSumPrice,
+      sumPrice,
     };
 
     if (!order) {
       const newOrder = new Order({
         // userId,
-        user,
-        products: [product],
+        // user,
+        products: product,
         message,
+        status,
+        paymentMethod,
+        sumPrice,
       });
       await newOrder.save();
     } else {
       const newOrder = new Order({
         // userId,
-        user,
-        products: [product],
+        // user,
+        products: product,
         message,
+        status,
+        paymentMethod,
+        sumPrice,
       });
       await newOrder.save();
     }
-
-    const populatedOrder = await Order.findById(userId).populate('user', 'name');
-    res.status(200).json(populatedOrder);
-    // res.status(200).json('주문하기 성공');
+    // const populatedOrder = await Order.findById(userId).populate('user', 'name');
+    // res.status(200).json(populatedOrder);
+    res.status(200).json('주문하기 성공');
   } catch (err) {
     console.error(err);
     res.status(500).json('주문하기 실패');
@@ -95,6 +125,7 @@ const addOrder = async (req, res) => {
 // 카트에서 여러 상품을 가지고 주문
 module.exports = {
   addOrder,
+  sendOrder,
 };
 
 // const addOrder = async(req, res) =>{
