@@ -24,7 +24,7 @@ router.get('/:category', getProductsByCategory); // 카테고리에 따른 상�
 router.get('/productId/:productId', getProductDetail); // 특정 상품 데이터 가져오기
 
 // 상품 바로 주문하기  /store/sendOrder
-router.post('/sendOrder', sendOrder);
+// router.post('/sendOrder', sendOrder);
 
 // 상품 주문
 router.post('/order', addOrder);
