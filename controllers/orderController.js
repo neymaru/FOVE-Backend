@@ -37,12 +37,13 @@ const addOrder = async (req, res) => {
     // }
 
     const {
-      productName,
-      img,
-      price,
-      size,
-      color,
-      quantity,
+      // productName,
+      // img,
+      // price,
+      // size,
+      // color,
+      // quantity,
+      products,
       unitSumPrice,
       message,
       isOrdered,
@@ -69,17 +70,17 @@ const addOrder = async (req, res) => {
     // const userId = req.user._id;
 
     const order = await Order.findOne();
-    const product = [
-      {
-        productName,
-        img,
-        price,
-        size,
-        color,
-        quantity,
-        unitSumPrice,
-      },
-    ];
+    // const product = [
+    //   {
+    //     productName,
+    //     img,
+    //     price,
+    //     size,
+    //     color,
+    //     quantity,
+    //     unitSumPrice,
+    //   },
+    // ];
     const user = { name };
     const recipient = {
       address,
@@ -105,7 +106,7 @@ const addOrder = async (req, res) => {
         // user,
         user,
         recipient,
-        products: [product],
+        products,
         message,
         isOrdered,
         isShipping,
@@ -121,7 +122,7 @@ const addOrder = async (req, res) => {
         // user,
         user,
         recipient,
-        products: [product],
+        products,
         message,
         isOrdered,
         isShipping,
@@ -134,7 +135,7 @@ const addOrder = async (req, res) => {
     }
     // const populatedOrder = await Order.findById(userId).populate('user', 'name');
     // res.status(200).json(populatedOrder);
-    res.status(200).json('주문하기 성공');
+    res.status(200).json('주문하기 성공 최두루 아이스크림 사줘');
   } catch (err) {
     console.error(err);
     res.status(500).json('주문하기 실패');
