@@ -60,10 +60,10 @@ const addProductToCart = async (req, res) => {
     // 상품을 추가시키지 않고 해당 product의 quantity를 req.body로 받은 quantity 만큼 증가
 
     // 장바구니에 동일한 옵션의 상품이 없을 경우 products 배열에 product 추가
-    if (sameProduct.length === 0) {
+    if (!sameProduct) {
       cart.products.push(product); // products 배열에 product 추가
       await cart.save();
-      res.status(200).json('장바구니 담기 성공3');
+      res.status(200).json('장바구니 담기 성공  3');
       return;
     }
 
