@@ -2,27 +2,27 @@ const Order = require('../models/order');
 // const User = require('../models/user');
 // const product = require('../models/product');
 
-const sendOrder = async (req, res) => {
-  try {
-    const { productName, img, price, size, color, quantity, unitSumPrice } = req.body;
-    const productInfo = {
-      productName,
-      img,
-      price,
-      size,
-      color,
-      quantity,
-      unitSumPrice,
-    };
-    res.send({ productInfo });
-  } catch (error) {
-    console.error(error);
-    res.sendStatus(500);
-  }
-  // try {
-  //   const { productName, img, price, size, color, quantity, unitSumPrice } = req.body;
-  // } catch (err) {}
-};
+// const sendOrder = async (req, res) => {
+//   try {
+//     const { productName, img, price, size, color, quantity, unitSumPrice } = req.body;
+//     const productInfo = {
+//       productName,
+//       img,
+//       price,
+//       size,
+//       color,
+//       quantity,
+//       unitSumPrice,
+//     };
+//     res.send({ productInfo });
+//   } catch (error) {
+//     console.error(error);
+//     res.sendStatus(500);
+//   }
+//   // try {
+//   //   const { productName, img, price, size, color, quantity, unitSumPrice } = req.body;
+//   // } catch (err) {}
+// };
 
 // 한개의 상품을 바로 주문할경우
 const addOrder = async (req, res) => {
@@ -36,13 +36,7 @@ const addOrder = async (req, res) => {
     //   return res.status(404).json({ message: 'User not found' });
     // }
 
-    const { productName, img, price, size, color, quantity, unitSumPrice, message, status, paymentMethod } = req.body;
-    // const userId = '12345';
-    // const userId = req.user._id;
-
-    const sumPrice = 100;
-    const order = await Order.findOne();
-    const product = {
+    const {
       productName,
       img,
       price,
@@ -50,16 +44,73 @@ const addOrder = async (req, res) => {
       color,
       quantity,
       unitSumPrice,
-      sumPrice,
+      message,
+      isOrdered,
+      isShipping,
+      isDelivered,
+      isReturn,
+      paymentMethod,
+      name,
+      address,
+      phone,
+      email,
+      recipientName,
+      recipientZipcode,
+      recipientAddress,
+      recipientAddressDetail,
+      telAreaCode,
+      telMidNum,
+      telLastNum,
+      phoneCode,
+      phoneMidNum,
+      phoneLastNum,
+    } = req.body;
+    // const userId = '12345';
+    // const userId = req.user._id;
+
+    const order = await Order.findOne();
+    const product = [
+      {
+        productName,
+        img,
+        price,
+        size,
+        color,
+        quantity,
+        unitSumPrice,
+      },
+    ];
+    const user = { name };
+    const recipient = {
+      address,
+      phone,
+      email,
+      recipientName,
+      recipientZipcode,
+      recipientAddress,
+      recipientAddressDetail,
+      telAreaCode,
+      telMidNum,
+      telLastNum,
+      phoneCode,
+      phoneMidNum,
+      phoneLastNum,
     };
+
+    const sumPrice = unitSumPrice;
 
     if (!order) {
       const newOrder = new Order({
         // userId,
         // user,
-        products: product,
+        user,
+        recipient,
+        products: [product],
         message,
-        status,
+        isOrdered,
+        isShipping,
+        isDelivered,
+        isReturn,
         paymentMethod,
         sumPrice,
       });
@@ -68,9 +119,14 @@ const addOrder = async (req, res) => {
       const newOrder = new Order({
         // userId,
         // user,
-        products: product,
+        user,
+        recipient,
+        products: [product],
         message,
-        status,
+        isOrdered,
+        isShipping,
+        isDelivered,
+        isReturn,
         paymentMethod,
         sumPrice,
       });
@@ -88,7 +144,6 @@ const addOrder = async (req, res) => {
 // 카트에서 여러 상품을 가지고 주문
 module.exports = {
   addOrder,
-  sendOrder,
 };
 
 // // 모든 주문 조회
