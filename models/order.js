@@ -8,6 +8,8 @@ const orderSchema = new mongoose.Schema({
     status: { type: String, require: true },
     approvedAt: { type: String, require: true },
     method: { type: String, require: true },
+    discount: { type: Number },
+    totalAmount: { type: Number },
   },
   user: {
     // TODO : 나중에는 userID만 넣어서 참조가능하게 할것!!
