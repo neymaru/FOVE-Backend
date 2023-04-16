@@ -1,6 +1,10 @@
 // 접속은 mongooseConnect.js 로. 이미 거기서 접속하므로 여기엔 불러오기만.
 require('../mongooseConnect'); // 변수에 담을 필요 없음.
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user'); // 스키마
+
+const { JWT_ACCESS_SECRET } = process.env;
 
 // 에러 메시지 변수로 저장
 const CHECKID_SUCCESS_MSG = '회원 가입이 가능한 ID입니다.';
@@ -11,6 +15,7 @@ const REGISTER_UNEXPECTED_MSG = '회원 가입 실패, 알 수 없는 문제 발
 const LOGIN_NOT_REGISTERED_MSG = '입력하신 ID를 가진 회원이 존재하지 않습니다.';
 const LOGIN_WRONG_PASSWORD_MSG = '비밀번호가 틀렸습니다.';
 const LOGIN_UNEXPECTED_MSG = '로그인 실패, 알 수 없는 문제 발생';
+const LOGIN_SUCCESS_MSG = '로그인 완료!';
 
 // 아이디 중복 확인
 const checkDuplicateId = async (req, res) => {
@@ -38,7 +43,13 @@ const registerUser = async (req, res) => {
     if (duplicatedUser) return res.status(400).json(REGISTER_DUPLICATED_MSG);
 
     // 중복 회원 없으면, 회원 가입.
-    await User.create(req.body);
+    // 입력 받은 비밀번호를 bcrypt 모듈을 사용하여 암호화하여 저장
+    const newUser = {
+      ...req.body,
+      password: bcrypt.hashSync(req.body.password, 10),
+    };
+
+    await User.create(newUser);
     res.status(200).json(REGISTER_SUCCESS_MSG);
   } catch (err) {
     console.error(err);
@@ -46,31 +57,75 @@ const registerUser = async (req, res) => {
   }
 };
 
-// 로그인 - 아직 작성 중!!!
+// 로그인
 const loginUser = async (req, res) => {
   try {
     // 폼에서 입력한 값과 같은 아이디인지 확인.
     const findUser = await User.findOne({ id: req.body.id });
-    // 아이디가 없을 때 -> 메시지 출력
-    if (!findUser) return res.status(400).json(LOGIN_NOT_REGISTERED_MSG);
+    // 회원이 아닐 경우 -> 메시지 출력
+    if (!findUser) return res.status(400).json({ message: LOGIN_NOT_REGISTERED_MSG });
 
     // findUser 에 값이 있음 -> 비번 대조
-    // 비번 틀렸을 때.
-    if (findUser.password !== req.body.password) {
-      return res.status(400).json(LOGIN_WRONG_PASSWORD_MSG);
-    } // depth 줄이기!
+    // bcrypt 모듈을 사용해 암호화 된 비밀번호와 입력한 비밀번호가 동일한지 비교
+    const isSamePassword = bcrypt.compareSync(req.body.password, findUser.password);
 
-    // 비번 맞았을 때 -> 로그인 처리
-    // req.session.login = true;
-    // req.session.userId = req.body.id;
-    // ... res.cookie ...
+    // 비번이 동일하면 로그인 성공 -> 토큰 발행
+    if (isSamePassword) {
+      // 토큰에 넣을 이름 암호화. 중간에 * 표시
+      let encodedName = '';
+      for (let i = 0; i < findUser.name.length; i += 1) {
+        if (i % 2 === 0) {
+          encodedName += findUser.name[i];
+        } else {
+          encodedName += '*';
+        }
+      }
 
-    res.status(200);
-    // res.redirect('/dbBoard'); // 게시판 출력
+      // jwt 모듈을 사용해 accessToken 발행
+      const accessToken = jwt.sign(
+        {
+          id: findUser.id,
+          name: findUser.name,
+          nameEncoded: encodedName, // * 처리된 이름
+          points: findUser.points,
+          isAdmin: findUser.isAdmin,
+        }, // 유저 정보를 암호화하여 토큰 발행
+        JWT_ACCESS_SECRET, // 해당 JWT를 쉽게 풀 수 없도록, 암호키 삽입
+        { expiresIn: '6h' }, // 해당 토큰 만료기간 설정, 6시간 동안 토큰을 인증할 수 있음
+      );
+
+      // 생성된 토큰을 프론트로 전달
+      // 프론트에서는 로컬 스토리지에 저장 할 것이므로, 쿠키에 담지 않고 데이터로 전송
+      res.status(200).json({
+        token: accessToken,
+        message: LOGIN_SUCCESS_MSG,
+      });
+    } else {
+      // 비밀번호 틀렸을 경우
+      return res.status(400).json({ message: LOGIN_WRONG_PASSWORD_MSG });
+    }
   } catch (err) {
-    console.error(err);
-    res.status(500).json(LOGIN_UNEXPECTED_MSG);
+    console.error(err.response.data);
+    res.status(500).json({ message: LOGIN_UNEXPECTED_MSG });
   }
+};
+
+// 브라우저 로컬 스토리지에 저장 된, 토큰을 검증하는 컨트롤러
+// 토큰 검증이 완료 되면 원하는 정보를 담아서 전달 -> 프론트에서는 로그인 처리
+const verifyToken = (req, res) => {
+  jwt.verify(req.body.token, JWT_ACCESS_SECRET, (err, decoded) => {
+    // 토큰 검증 실패 시, 권한 없음 결과 전달
+    if (err) return res.status(401).json({ message: '토큰 기한 만료. 로그아웃!!' });
+
+    // 토큰 검증 성공 시, 토큰을 푼 결과(decoded) 안의 userID 를 받아서 프론트에 전달
+    return res.status(200).json({
+      id: decoded.id,
+      nameEncoded: decoded.nameEncoded, // * 처리된 이름
+      points: decoded.points,
+      isAdmin: decoded.isAdmin,
+      message: '토큰 검증 완료',
+    });
+  });
 };
 
 // Redux 데이터를 가지고 오는 컨트롤러
@@ -88,5 +143,6 @@ module.exports = {
   checkDuplicateId,
   registerUser,
   loginUser,
+  verifyToken,
   getUserData,
 };

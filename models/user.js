@@ -4,8 +4,7 @@ const { Schema } = mongoose;
 
 const userSchema = new Schema(
   {
-    id: { type: String }, // 아이디. 이메일 형식
-    // id: { type: String, required: true, unique: true }, // 아이디. 이메일 형식
+    id: { type: String, required: true, unique: true }, // 아이디. 이메일 형식
     password: { type: String, require: true }, // 비밀번호
     name: { type: String, require: true }, // 이름
     phone: { type: String, require: true }, // 핸드폰 번호. 010xxxx0000 형식
