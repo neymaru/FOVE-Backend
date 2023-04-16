@@ -2,7 +2,7 @@ const router = require('express').Router();
 const multer = require('multer');
 const fs = require('fs');
 
-const { createProduct, getAllProducts, getOrderList } = require('../controllers/productController');
+const { createProduct, getAllProducts, deleteProduct, modifyProduct } = require('../controllers/productController');
 
 // ------------------- multer, 이미지 저장 관련 -------------------
 const dir = './uploads';
@@ -33,7 +33,13 @@ router.post('/register-product', upload.array('img'), createProduct);
 // 여기서 업로드 된 파일은 createProduct 기능의 req.files 배열에서 사용 가능
 
 // 상품리스트 페이지 /admin/productlist
-router.get('/poductlist', getAllProducts); // 전체 상품 데이터 가져오기
+router.get('/productlist', getAllProducts); // 전체 상품 데이터 가져오기
+
+// 상품리스트 페이지에서 상품 수정
+router.post('/productlist/modify/:productId', upload.array('img'), modifyProduct);
+
+// 상품리스트 페이지에서 상품 삭제
+router.post('/productlist/delete/:productId', deleteProduct);
 
 // 전체 주문 리스트
 // router.get('/orderlist', getOrderList);
