@@ -7,6 +7,7 @@ const getCartInfo = async (req, res) => {
     const cart = await Cart.findOne();
 
     if (!cart) return res.status(200).json({ length: 0 }); // 장바구니가 비어있으면 lenght만 넘기기
+
     res.status(200).json({ products: cart.products, length: cart.products.length }); // 장바구니에 상품이 있으면 상품 데이터와 length 넘기기
   } catch (err) {
     console.error(err);
@@ -63,7 +64,7 @@ const addProductToCart = async (req, res) => {
     if (!sameProduct) {
       cart.products.push(product); // products 배열에 product 추가
       await cart.save();
-      res.status(200).json('장바구니 담기 성공  3');
+      res.status(200).json('장바구니 담기 성공3');
       return;
     }
 
@@ -72,7 +73,7 @@ const addProductToCart = async (req, res) => {
     sameProduct.unitSumPrice = sameProduct.price * sameProduct.quantity;
 
     await cart.save();
-    res.send('기존 상품 수량 증가');
+    res.status(200).json('기존 상품 수량 증가');
   } catch (err) {
     console.error(err);
     res.status(500).json('장바구니 담기 실패');
@@ -85,7 +86,6 @@ const removeCartItem = async (req, res) => {
     const { productId } = req.params;
 
     const cart = await Cart.findOne();
-
     if (!cart) {
       res.status(404).json('장바구니 없음');
       return;
@@ -96,7 +96,6 @@ const removeCartItem = async (req, res) => {
       { $pull: { products: { _id: productId } } },
       { new: true }, // 업데이트된 내용 반환을 위해 new: true
     );
-
     res.status(200).json({ messege: '장바구이에서 해당 상품 삭제 성공', updatedCart });
   } catch (err) {
     console.error(err);
@@ -177,31 +176,6 @@ const cartProductQtyMinus = async (req, res) => {
     res.status(500).json('알 수 없는 에러');
   }
 };
-
-// ------------------- 예비 코드 -------------------
-// 장바구니에 상품 추가
-// const addProductToCart = async (req, res) => {
-//   try {
-//     const { productName, img, price, size, color, quantity } = req.body;
-
-//     // 장바구니 내 상품별 금액 합계
-//     const products = req.body.products.map((product) => ({
-//       ...product,
-//       unitSumPrice: product.price * product.quantity,
-//     }));
-
-//     const cart = new Cart({ products });
-
-//     const cartTotalPrice = products.reduce((total, product) => total + product.unitSumPrice, 0);
-//     cart.cartTotalPrice = cartTotalPrice;
-
-//     await cart.save();
-//     res.status(200).send('장바구니 담기 성공');
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).send('장바구니 담기 실패');
-//   }
-// };
 
 module.exports = {
   addProductToCart,
