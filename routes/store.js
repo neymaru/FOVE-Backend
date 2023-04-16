@@ -4,6 +4,7 @@ const {
   getNewProducts,
   getProductsByCategory,
   getProductDetail,
+  searchProduct,
 } = require('../controllers/productController');
 
 const { sendOrder, addOrder } = require('../controllers/orderController');
@@ -23,11 +24,15 @@ router.get('/:category', getProductsByCategory); // 카테고리에 따른 상�
 // 특정상품 상세페이지 /store/productId/"상품고유코드"
 router.get('/productId/:productId', getProductDetail); // 특정 상품 데이터 가져오기
 
+// 상품 검색 /store/search
+router.post('/search', searchProduct);
+
 // 상품 바로 주문하기  /store/sendOrder
 // router.post('/sendOrder', sendOrder);
 
 // 상품 주문
 router.post('/order', addOrder);
+
 // ------------------- 예비 코드 -------------------
 // /store/beanie
 // router.get('/beanie', getBeanieProducts);

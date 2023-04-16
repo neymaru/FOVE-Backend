@@ -10,6 +10,7 @@ const {
   getLikeCount,
   addUserIdtoLike,
   removeUserIdFromLike,
+  searchReview,
 } = require('../controllers/boardController');
 
 // ------------------- multer, 이미지 저장 관련 -------------------
@@ -65,5 +66,8 @@ router.post('/review/likeplus/:reviewId', addUserIdtoLike);
 
 // 좋아요 수 감소(좋아요 해제한 유저 아이디 게시글 db에서 제거) /board/review/likeminus/:"리뷰고유코드"
 router.post('/review/likeminus/:reviewId', removeUserIdFromLike);
+
+// 리뷰 검색 /board/review/search
+router.post('/review/search', searchReview);
 
 module.exports = router;
