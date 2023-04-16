@@ -135,6 +135,45 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+// 스토어 페이지에서 상품 검색 기능
+const searchProduct = async (req, res) => {
+  try {
+    const { searchText } = req.body;
+
+    // 검색어가 없을 때 (이건 프론트에서 검색어 입력 안하면 form데이터 전송 안되게 처리해도 됨)
+    if (!searchText || searchText.trim() === '') {
+      return res.status(400).json('검색어를 입력해주세요.');
+    }
+
+    const searchCondition = {
+      $or: [
+        { productCode: { $regex: searchText, $options: 'i' } },
+        { productName: { $regex: searchText, $options: 'i' } },
+      ],
+      // **** 참고 ****
+      // $regex -> 특정 패턴이 포함된 문자열 검색(정규식)
+      // $option -> 검색 동장에 대한 설정
+      //    i (ignore case): 대소문자를 무시하여 검색
+      //    m (multiline): 다중 행 검색
+      //    s (dotall): 개행 문자를 포함한 모든 문자를 대상으로 검색
+      //    x (extended): 정규식 내의 공백을 무시
+      // $or -> 두 가지 이상의 조건 중 하나라도 일치하는 경우 반환
+    };
+
+    // 검색 결과 DB에서 가져오기
+    const searchedProduct = await Product.find(searchCondition);
+
+    if (searchedProduct.length === 0) {
+      return res.status(404).json('검색된 상품이 없습니다.');
+    }
+
+    res.status(200).json({ message: '검색된 상품 반환', searchedProduct });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json('검색 실패(서버 오류)');
+  }
+};
+
 // 전체 주문 리스트 불러오기
 // const getOrderList = {};
 
@@ -146,4 +185,5 @@ module.exports = {
   getProductDetail,
   deleteProduct,
   modifyProduct,
+  searchProduct,
 };

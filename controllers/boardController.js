@@ -144,6 +144,60 @@ const removeUserIdFromLike = async (req, res) => {
   }
 };
 
+// 리뷰 검색 기능
+const searchReview = async (req, res) => {
+  try {
+    const { searchTitle, searchTitleAndContent, searchWriter } = req.body;
+    // searchTitle: '제목' 검색창에 입력한 값
+    // searchTitleAndContent: '제목 또는 내용' 검색에 입력한 값
+    // searchTitle: '작성자' 검색창에 입력한 값
+
+    // 검색 조건이 하나도 전달되지 않았을 경우 (이건 프론트에서 검색어 입력 안하면 form데이터 전송 안되게 처리해도 됨)
+    if (!searchTitle && !searchTitleAndContent && !searchWriter) {
+      return res.status(400).json('검색할 조건이 하나 이상 전달되어야 합니다.');
+    }
+
+    // 검색 조건 담을 객체
+    const searchCondition = {};
+
+    // '제목' 검색 시
+    if (searchTitle) searchCondition.title = { $regex: searchTitle, $options: 'i' };
+    // **** 참고 ****
+    // $regex -> 특정 패턴이 포함된 문자열 검색(정규식)
+    // $option -> 검색 동장에 대한 설정
+    //    i (ignore case): 대소문자를 무시하여 검색
+    //    m (multiline): 다중 행 검색
+    //    s (dotall): 개행 문자를 포함한 모든 문자를 대상으로 검색
+    //    x (extended): 정규식 내의 공백을 무시
+
+    // '제목 또는 내용' 검색 시
+    if (searchTitleAndContent) {
+      searchCondition.$or = [
+        { title: { $regex: searchTitleAndContent, $options: 'i' } },
+        { content: { $regex: searchTitleAndContent, $options: 'i' } },
+      ];
+      // $or -> 두 가지 이상의 조건 중 하나라도 일치하는 경우 반환
+    }
+
+    // '작성자' 검색 시
+    if (searchWriter) {
+      searchCondition.writer = { $regex: searchWriter, $options: 'i' };
+    }
+
+    // 검색 결과 DB에서 가져오기
+    const searchedReview = await Review.find(searchCondition);
+
+    if (searchedReview.length === 0) {
+      return res.status(404).json('검색된 리뷰가 없습니다.');
+    }
+
+    res.status(200).json({ message: '검색된 리뷰 반환', searchedReview });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json('검색 실패(서버 오류)');
+  }
+};
+
 module.exports = {
   getAllReviews,
   writeReview,
@@ -152,4 +206,5 @@ module.exports = {
   getLikeCount,
   addUserIdtoLike,
   removeUserIdFromLike,
+  searchReview,
 };

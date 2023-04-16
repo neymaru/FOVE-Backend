@@ -41,7 +41,7 @@ router.post('/productlist/modify/:productId', upload.array('img'), modifyProduct
 // 상품리스트 페이지에서 상품 삭제
 router.post('/productlist/delete/:productId', deleteProduct);
 
-// 전체 주문 리스트
+// 전체 주문 리스트 /admin/orderlist
 // router.get('/orderlist', getOrderList);
 
 // ------------------- 예비 코드 -------------------
