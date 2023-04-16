@@ -37,6 +37,9 @@ const addOrder = async (req, res) => {
     // }
 
     const {
+      // 들어갈 내용 : status,approvedAt,method
+      // 상의할것 : 토탈 금액 알아서? 할인도 그전에 처리되는건지 ?
+      payments,
       // productName,
       // img,
       // price,
@@ -104,6 +107,7 @@ const addOrder = async (req, res) => {
       const newOrder = new Order({
         // userId,
         // user,
+        payments,
         user,
         recipient,
         products,
@@ -112,7 +116,7 @@ const addOrder = async (req, res) => {
         isShipping,
         isDelivered,
         isReturn,
-        paymentMethod,
+        // paymentMethod,
         sumPrice,
       });
       await newOrder.save();
@@ -120,6 +124,7 @@ const addOrder = async (req, res) => {
       const newOrder = new Order({
         // userId,
         // user,
+        payments,
         user,
         recipient,
         products,
