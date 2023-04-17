@@ -4,11 +4,12 @@ const User = require('../models/user');
 // ---------------------------- 장바구니 정보 조회(전체 상품 데이터, length) ----------------------------
 const getCartInfo = async (req, res) => {
   try {
-    const cart = await Cart.findOne();
+    const userId = req.params.userid;
+    const userCart = await Cart.find({ user: userId });
 
-    if (!cart) return res.status(200).json({ length: 0 }); // 장바구니가 비어있으면 lenght만 넘기기
+    if (userCart.length === 0) return res.status(404).json('생성된 카트가 없습니다.');
 
-    res.status(200).json({ products: cart.products, length: cart.products.length }); // 장바구니에 상품이 있으면 상품 데이터와 length 넘기기
+    res.status(200).json({ products: userCart.products, length: userCart.products.length }); // 장바구니에 상품이 있으면 상품 데이터와 length 넘기기
   } catch (err) {
     console.error(err);
     res.status(500).json('장바구니 조회 실패');
@@ -19,6 +20,7 @@ const getCartInfo = async (req, res) => {
 const addProductToCart = async (req, res) => {
   try {
     // req.boy의 상품 정보들을 구조분해 할당으로 매칭시켜 변수 저장
+    const userId = req.params.userid;
     const { productName, img, price, size, color, quantity, unitSumPrice } = req.body;
 
     // req.body로 받은 상품 정보들을 product라는 객체 형태의 변수에 저장
@@ -32,28 +34,30 @@ const addProductToCart = async (req, res) => {
       unitSumPrice,
     };
 
-    const cart = await Cart.findOne({}); // [user DB의 cartId 이용하여 찾아야 함]
+    const userCart = await Cart.find({ user: userId });
 
-    // cart 생성 안돼있거나 cart 생성하고 products 배열에 product 넣어서 DB 저장
-    if (!cart) {
+    // cart가 생성되어있지 않으면 cart 생성하고 userId와 products 배열에 product 정보 넣어서 DB 저장
+
+    if (userCart.products === 0) {
       const newCart = new Cart({
+        user: userId,
         products: [product],
       });
       await newCart.save();
-      res.status(200).json('장바구니 담기 성공1');
-      return; // 다음 코드 실행 안되게
+      res.status(200).json('장바구니 담기 성공1', userCart);
+      return;
     }
 
     // cart는 생성 돼있는데 products 배열이 없거나 products 배열에 담긴 product가 없을 때
-    if (!cart.products || !cart.products.length) {
-      cart.products = [product];
-      await cart.save();
-      res.status(200).json('장바구니 담기 성공2');
-      return; // 다음 코드 실행 안되게
-    }
+    // if (!userCart.products || !userCart.products.length) {
+    //   userCart.products = [product];
+    //   await userCart.save();
+    //   res.status(200).json('장바구니 담기 성공2');
+    //   return; // 다음 코드 실행 안되게
+    // }
 
     // 장바구니에 상품이 있으면 추가하려는 상품과 동일한 옴션의 상품이 있는지 확인 후 sameProduct 배열에 저장
-    const sameProduct = cart.products.find(
+    const sameProduct = userCart.products.find(
       (productEl) => productName === productEl.productName && size === productEl.size && color === productEl.color,
     );
     // cart 의 products 배열 안에 있는 product의 productName, size, color 의 값과
@@ -62,8 +66,8 @@ const addProductToCart = async (req, res) => {
 
     // 장바구니에 동일한 옵션의 상품이 없을 경우 products 배열에 product 추가
     if (!sameProduct) {
-      cart.products.push(product); // products 배열에 product 추가
-      await cart.save();
+      userCart.products.push(product); // products 배열에 product 추가
+      await userCart.save();
       res.status(200).json('장바구니 담기 성공3');
       return;
     }
@@ -72,7 +76,7 @@ const addProductToCart = async (req, res) => {
     sameProduct.quantity += quantity;
     sameProduct.unitSumPrice = sameProduct.price * sameProduct.quantity;
 
-    await cart.save();
+    await userCart.save();
     res.status(200).json('기존 상품 수량 증가');
   } catch (err) {
     console.error(err);

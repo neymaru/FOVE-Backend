@@ -9,11 +9,11 @@ const {
   cartProductQtyMinus,
 } = require('../controllers/cartController');
 
-// localhost:4000/
-router.get('/', getCartInfo); // 장바구니 정보 불러오기(장바구니 전체 데이터, 장바구니 products length)
+// 장바구니 정보 불러오기 /cart/list/"유저아이디"
+router.post('/list/:userid', getCartInfo); // 장바구니 정보 불러오기(장바구니 전체 데이터, 장바구니 products length)
 
-// 장바구니에 상품 추가 /store/productId/"상품고유코드"
-router.post('/store/productId/:productId', addProductToCart);
+// 장바구니에 상품 추가 /cart/add/"유저아이디"
+router.post('/add/:userid', addProductToCart);
 
 // 장바구니 상품 하나 삭제 /cart/productId/"상품고유코드"
 router.post('/cart/productId/:productId', removeCartItem);
