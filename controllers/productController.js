@@ -4,24 +4,23 @@ const Product = require('../models/product');
 // 상품 등록
 const createProduct = async (req, res) => {
   try {
-    const { prodCode, productName, price, size, color, category, stock, detail } = JSON.parse(req.body.data);
+    const { productCode, productName, price, category, size, detail } = req.body;
     // req.body의 data 필드를 JSON으로 구문 분석하고 결과 객체를 분해하여 변수명과 일치하는 key 값의 값들을 각 변수들에 저장
     // 프론트에서 data라는 이름으로 JSON 형태로 보내기 때문에 req.body.data로 받아서 JSON.parse() 함수를 이용해 객체형태로 parsing
 
     const img = req.files.map((el) => el.originalname);
-    // req.files 배열의 요소들을 각 파일의 원본명으로 매핑하여 'img' 라는 이름의 새 배열에 저장
+    // // req.files 배열의 요소들을 각 파일의 원본명으로 매핑하여 'img' 라는 이름의 새 배열에 저장
 
     const newProduct = new Product({
-      prodCode,
+      productCode,
       productName,
       price,
       size,
-      color,
       category,
-      img,
-      stock,
       detail,
+      img,
     });
+    console.log(newProduct);
 
     await newProduct.save();
     res.status(200).json('상품 등록 성공!');
@@ -79,7 +78,6 @@ const getProductDetail = async (req, res) => {
   try {
     const { productId } = req.params; // params로 들어온 productId 값을 구조분해할당으로 매칭시켜 변수 저장
     const product = await Product.find({ _id: productId });
-    console.log(product);
 
     // 예비 코드
     // const product = await Product.findById(productId); // 상품 DB에서 _id가 productId 인 것 조회해서 product에 담기

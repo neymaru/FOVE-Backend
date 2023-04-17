@@ -34,11 +34,10 @@ const addProductToCart = async (req, res) => {
       unitSumPrice,
     };
 
-    const userCart = await Cart.find({ user: userId });
+    const userCart = await Cart.findOne({ user: userId });
 
     // cart가 생성되어있지 않으면 cart 생성하고 userId와 products 배열에 product 정보 넣어서 DB 저장
-
-    if (userCart.products === 0) {
+    if (!userCart || userCart.length === 0) {
       const newCart = new Cart({
         user: userId,
         products: [product],
@@ -55,17 +54,16 @@ const addProductToCart = async (req, res) => {
     //   res.status(200).json('장바구니 담기 성공2');
     //   return; // 다음 코드 실행 안되게
     // }
-
     // 장바구니에 상품이 있으면 추가하려는 상품과 동일한 옴션의 상품이 있는지 확인 후 sameProduct 배열에 저장
     const sameProduct = userCart.products.find(
       (productEl) => productName === productEl.productName && size === productEl.size && color === productEl.color,
     );
+
     // cart 의 products 배열 안에 있는 product의 productName, size, color 의 값과
     // req.body에서 받은 productName, img, size, color의 값이 모두 동일하면
     // 상품을 추가시키지 않고 해당 product의 quantity를 req.body로 받은 quantity 만큼 증가
-
     // 장바구니에 동일한 옵션의 상품이 없을 경우 products 배열에 product 추가
-    if (!sameProduct) {
+    if (!sameProduct[0]) {
       userCart.products.push(product); // products 배열에 product 추가
       await userCart.save();
       res.status(200).json('장바구니 담기 성공3');
@@ -73,8 +71,8 @@ const addProductToCart = async (req, res) => {
     }
 
     // 장바구니에 동일한 옵션의 상품이 있을 경우 상품을 추가하지 않고 기존에 들어있는 상품의 quantity에 req.body의 quantity를 더해 증감시키기
-    sameProduct.quantity += quantity;
-    sameProduct.unitSumPrice = sameProduct.price * sameProduct.quantity;
+    sameProduct[0].quantity += quantity;
+    sameProduct[0].unitSumPrice = sameProduct[0].price * sameProduct[0].quantity;
 
     await userCart.save();
     res.status(200).json('기존 상품 수량 증가');
