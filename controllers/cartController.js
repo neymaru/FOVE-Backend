@@ -1,15 +1,17 @@
 const Cart = require('../models/cart');
+const user = require('../models/user');
 const User = require('../models/user');
 
 // ---------------------------- 장바구니 정보 조회(전체 상품 데이터, length) ----------------------------
 const getCartInfo = async (req, res) => {
   try {
     const userId = req.params.userid;
-    const userCart = await Cart.find({ user: userId });
+    const userCart = await Cart.findOne({ user: userId });
+    const totalQuantity = userCart.products.reduce((sum, product) => sum + product.quantity, 0); // 상품별 quantity 모두 더하기
 
-    if (userCart.length === 0) return res.status(404).json('생성된 카트가 없습니다.');
+    if (!userCart || userCart.length === 0) return res.status(404).json('장바구니 정보가 없습니다.');
 
-    res.status(200).json({ products: userCart.products, length: userCart.products.length }); // 장바구니에 상품이 있으면 상품 데이터와 length 넘기기
+    res.status(200).json({ products: userCart.products, cartQuantity: totalQuantity });
   } catch (err) {
     console.error(err);
     res.status(500).json('장바구니 조회 실패');
@@ -21,7 +23,7 @@ const addProductToCart = async (req, res) => {
   try {
     // req.boy의 상품 정보들을 구조분해 할당으로 매칭시켜 변수 저장
     const userId = req.params.userid;
-    const { productName, img, price, size, color, quantity, unitSumPrice } = req.body;
+    const { productName, img, price, size, quantity, unitSumPrice } = req.body;
 
     // req.body로 받은 상품 정보들을 product라는 객체 형태의 변수에 저장
     const product = {
@@ -29,7 +31,6 @@ const addProductToCart = async (req, res) => {
       img,
       price,
       size,
-      color,
       quantity,
       unitSumPrice,
     };
@@ -37,13 +38,21 @@ const addProductToCart = async (req, res) => {
     const userCart = await Cart.findOne({ user: userId });
 
     // cart가 생성되어있지 않으면 cart 생성하고 userId와 products 배열에 product 정보 넣어서 DB 저장
-    if (!userCart || userCart.length === 0) {
+    if (!userCart) {
       const newCart = new Cart({
         user: userId,
         products: [product],
       });
       await newCart.save();
-      res.status(200).json('장바구니 담기 성공1', userCart);
+      res.status(200).json({ message: '장바구니 담기 성공1', newCart });
+      return;
+    }
+
+    // cart는 생성되어있는데 cart 안에 들어있는 상품이 없을 때
+    if (userCart.products.length === 0) {
+      userCart.products = [product];
+      await userCart.save();
+      res.status(200).json({ message: '장바구니 담기 성공2', userCart });
       return;
     }
 
@@ -54,28 +63,27 @@ const addProductToCart = async (req, res) => {
     //   res.status(200).json('장바구니 담기 성공2');
     //   return; // 다음 코드 실행 안되게
     // }
+
     // 장바구니에 상품이 있으면 추가하려는 상품과 동일한 옴션의 상품이 있는지 확인 후 sameProduct 배열에 저장
     const sameProduct = userCart.products.find(
-      (productEl) => productName === productEl.productName && size === productEl.size && color === productEl.color,
+      (productEl) => productName === productEl.productName && size === productEl.size,
     );
 
-    // cart 의 products 배열 안에 있는 product의 productName, size, color 의 값과
-    // req.body에서 받은 productName, img, size, color의 값이 모두 동일하면
-    // 상품을 추가시키지 않고 해당 product의 quantity를 req.body로 받은 quantity 만큼 증가
-    // 장바구니에 동일한 옵션의 상품이 없을 경우 products 배열에 product 추가
-    if (!sameProduct[0]) {
-      userCart.products.push(product); // products 배열에 product 추가
+    // 동일한 상품이 없으면 추가
+    if (!sameProduct) {
+      userCart.products.push(product);
       await userCart.save();
-      res.status(200).json('장바구니 담기 성공3');
+      res.status(200).json({ message: '장바구니 담기 성공3', userCart });
       return;
     }
 
-    // 장바구니에 동일한 옵션의 상품이 있을 경우 상품을 추가하지 않고 기존에 들어있는 상품의 quantity에 req.body의 quantity를 더해 증감시키기
-    sameProduct[0].quantity += quantity;
-    sameProduct[0].unitSumPrice = sameProduct[0].price * sameProduct[0].quantity;
+    // // 장바구니에 동일한 옵션의 상품이 있을 경우 상품을 추가하지 않고 기존에 들어있는 상품의 quantity에 req.body의 quantity를 더해 증감시키기
+    console.log(sameProduct.quantity);
+    sameProduct.quantity += quantity;
+    sameProduct.unitSumPrice = sameProduct.price * sameProduct.quantity;
 
     await userCart.save();
-    res.status(200).json('기존 상품 수량 증가');
+    res.status(200).json({ message: '기존 상품 수량 증가', userCart });
   } catch (err) {
     console.error(err);
     res.status(500).json('장바구니 담기 실패');
