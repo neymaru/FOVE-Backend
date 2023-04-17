@@ -35,7 +35,7 @@ router.post('/register-product', upload.array('img'), createProduct);
 // 상품리스트 페이지 /admin/productlist
 router.get('/productlist', getAllProducts); // 전체 상품 데이터 가져오기
 
-// 상품리스트 페이지에서 상품 수정
+// 상품리스트 페이지에서 상품 수정 /admin/productlist/modify/"상품고유코드"
 router.post('/productlist/modify/:productId', upload.array('img'), modifyProduct);
 
 // 상품리스트 페이지에서 상품 삭제

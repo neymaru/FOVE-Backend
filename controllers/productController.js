@@ -78,11 +78,14 @@ const getProductsByCategory = async (req, res) => {
 const getProductDetail = async (req, res) => {
   try {
     const { productId } = req.params; // params로 들어온 productId 값을 구조분해할당으로 매칭시켜 변수 저장
-    const product = await Product.findById(productId); // 상품 DB에서 _id가 productId 인 것 조회해서 product에 담기
+    const product = await Product.find({ _id: productId });
+    console.log(product);
 
-    if (!product) {
-      return res.status(404).send('해당 상품이 존재하지 않습니다.');
-    }
+    // 예비 코드
+    // const product = await Product.findById(productId); // 상품 DB에서 _id가 productId 인 것 조회해서 product에 담기
+    // if (!product) {
+    //   return res.status(404).send('해당 상품이 존재하지 않습니다.');
+    // }
 
     res.status(200).json(product); // 상태코드 200과 product를 json 응답
   } catch (err) {
