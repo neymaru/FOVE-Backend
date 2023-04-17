@@ -21,7 +21,7 @@ const registerRouter = require('./routes/register');
 const boardRouter = require('./routes/board');
 // const orderRouter = require('./routes/order');
 
-app.use('/', cartRouter);
+app.use('/cart', cartRouter);
 app.use('/user', userRouter);
 app.use('/login', loginRouter);
 app.use('/admin', adminRouter);

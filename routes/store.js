@@ -21,7 +21,7 @@ router.get('/new', getNewProducts); // 일정 기간 내 등록된 상품 데이
 // 카테고리별 상품 보기 /store/"카테고리명"
 router.get('/:category', getProductsByCategory); // 카테고리에 따른 상품 데이터 가져오기
 
-// 특정상품 상세페이지 /store/productId/"상품고유코드"
+// 특정상품 상세페이지 /store/productId/"유저아이디"
 router.get('/productId/:productId', getProductDetail); // 특정 상품 데이터 가져오기
 
 // 상품 검색 /store/search
