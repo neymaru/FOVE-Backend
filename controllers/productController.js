@@ -20,7 +20,6 @@ const createProduct = async (req, res) => {
       detail,
       img,
     });
-    console.log(newProduct);
 
     await newProduct.save();
     res.status(200).json('상품 등록 성공!');
@@ -61,7 +60,7 @@ const getProductsByCategory = async (req, res) => {
   try {
     const { category } = req.params; // params로 들어온 category 이름을 구조분해할당으로 매칭시켜 변수 저장
     const categories = ['beanie', 'cap', 'training', 'windbreaker'];
-    if (!categories.includes(category)) {
+    if (!categories.includes(category.toUpperCase())) {
       // params로 들어온 category가 위 categories 배열에 없을 때
       return res.status(400).send('유효하지 않은 카테고리 입니다.');
     }
