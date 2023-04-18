@@ -46,7 +46,7 @@ if (!fs.existsSync(dir)) fs.mkdirSync(dir); // dir 디렉토리 존재하는지 
 //   }
 // }
 
-// 리뷰 게시판 /board/review/
+// 리뷰 게시판 /board/review
 router.get('/review', getAllReviews);
 
 // 리뷰 작성 /board/review/write
