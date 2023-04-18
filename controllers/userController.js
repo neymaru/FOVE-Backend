@@ -16,6 +16,24 @@ const LOGIN_NOT_REGISTERED_MSG = '입력하신 ID를 가진 회원이 존재하�
 const LOGIN_WRONG_PASSWORD_MSG = '비밀번호가 틀렸습니다.';
 const LOGIN_UNEXPECTED_MSG = '로그인 실패, 알 수 없는 문제 발생';
 const LOGIN_SUCCESS_MSG = '로그인 완료!';
+const FINDINFO_UNEXPECTED_MSG = '회원 정보 찾기 실패, 알 수 없는 문제 발생';
+const EDITINFO_SUCCESS_MSG = '회원 정보 수정 성공!';
+const EDITINFO_UNEXPECTED_MSG = '회원 정보 수정 실패, 알 수 없는 문제 발생';
+
+// 이름에 * 처리하는 함수
+const encodingName = (name) => {
+  let encodedName = '';
+
+  for (let i = 0; i < name.length; i += 1) {
+    if (i % 2 === 0) {
+      encodedName += name[i];
+    } else {
+      encodedName += '*';
+    }
+  }
+
+  return encodedName;
+};
 
 // 아이디 중복 확인
 const checkDuplicateId = async (req, res) => {
@@ -72,14 +90,7 @@ const loginUser = async (req, res) => {
     // 비번이 동일하면 로그인 성공 -> 토큰 발행
     if (isSamePassword) {
       // 토큰에 넣을 이름 암호화. 중간에 * 표시
-      let encodedName = '';
-      for (let i = 0; i < findUser.name.length; i += 1) {
-        if (i % 2 === 0) {
-          encodedName += findUser.name[i];
-        } else {
-          encodedName += '*';
-        }
-      }
+      const encodedName = encodingName(findUser.name);
 
       // jwt 모듈을 사용해 accessToken 발행
       const accessToken = jwt.sign(
@@ -128,21 +139,79 @@ const verifyToken = (req, res) => {
   });
 };
 
-// Redux 데이터를 가지고 오는 컨트롤러
-const getUserData = async (req, res) => {
+// // 회원 정보 수정 페이지 /////////////////////////////////////////////////////////////////////////
+// 로그인 상태의 회원 정보를 가져오는 컨트롤러
+const getUserInfo = async (req, res) => {
   try {
-    const users = await User.find({});
-    res.status(200).json(users); // json 형태로 보냄
+    const findUserInfo = await User.findOne({ id: req.body.id });
+    res.status(200).json(findUserInfo);
   } catch (err) {
-    console.error(err); // 백엔드 콘솔에 뜨는.
-    res.status(500).json('데이터 삽입 실패, 알 수 없는 문제 발생'); // 500 ; 백엔드 잘못
+    console.error(err);
+    res.status(500).json(FINDINFO_UNEXPECTED_MSG);
   }
 };
+
+// 회원 정보 수정
+const editUserInfo = async (req, res) => {
+  try {
+    // 회원 정보 바뀔 내용들
+    const modifyInfo = {
+      password: bcrypt.hashSync(req.body.newPw, 10), // 비밀번호 암호화하기
+      name: req.body.newName,
+      phone: req.body.newPhone,
+    };
+
+    // DB의 회원 정보 수정
+    await User.updateOne({ id: req.body.id }, { $set: modifyInfo });
+
+    // 로그인을 위한 새로운 토큰 발행
+    // 토큰에 넣을 이름 암호화. 중간에 * 표시
+    const encodedName = encodingName(req.body.newName);
+
+    // jwt 모듈을 사용해 accessToken 발행
+    const accessToken = jwt.sign(
+      {
+        id: req.body.id,
+        name: req.body.newPw,
+        nameEncoded: encodedName, // * 처리된 이름
+        points: req.body.points,
+        isAdmin: req.body.isAdmin,
+      }, // 유저 정보를 암호화하여 토큰 발행
+      JWT_ACCESS_SECRET, // 해당 JWT를 쉽게 풀 수 없도록, 암호키 삽입
+      { expiresIn: '6h' }, // 해당 토큰 만료기간 설정, 6시간 동안 토큰을 인증할 수 있음
+    );
+
+    // 생성된 토큰을 프론트로 전달
+    // 프론트에서는 로컬 스토리지에 저장 할 것이므로, 쿠키에 담지 않고 데이터로 전송
+    res.status(200).json({
+      token: accessToken,
+      message: EDITINFO_SUCCESS_MSG,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json(EDITINFO_UNEXPECTED_MSG);
+  }
+};
+
+// /////////////////////////////////////////////////////////////////////////////////////////////////
+
+// // Redux 데이터를 가지고 오는 컨트롤러
+// const getUserData = async (req, res) => {
+//   try {
+//     const users = await User.find({});
+//     res.status(200).json(users); // json 형태로 보냄
+//   } catch (err) {
+//     console.error(err); // 백엔드 콘솔에 뜨는.
+//     res.status(500).json('데이터 삽입 실패, 알 수 없는 문제 발생'); // 500 ; 백엔드 잘못
+//   }
+// };
 
 module.exports = {
   checkDuplicateId,
   registerUser,
   loginUser,
   verifyToken,
-  getUserData,
+  getUserInfo,
+  editUserInfo,
+  // getUserData,
 };
