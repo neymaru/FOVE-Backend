@@ -19,6 +19,7 @@ const productRouter = require('./routes/product');
 const storeRouter = require('./routes/store');
 const registerRouter = require('./routes/register');
 const boardRouter = require('./routes/board');
+const noticeRouter = require('./routes/notice');
 const mypageRouter = require('./routes/mypage');
 // const orderRouter = require('./routes/order');
 
@@ -31,6 +32,7 @@ app.use('/store', storeRouter);
 app.use('/register', registerRouter);
 app.use('/uploads', express.static('uploads'));
 app.use('/board', boardRouter);
+app.use('/notice', noticeRouter);
 app.use('/mypage', mypageRouter);
 // app.use('/order', orderRouter);
 

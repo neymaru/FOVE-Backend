@@ -6,7 +6,7 @@ const { MDB_URI } = process.env;
 const connect = async () => {
   try {
     await mongoose.connect(MDB_URI, {
-      dbName: 'test',
+      dbName: 'fove',
       useNewUrlParser: true,
     });
     console.log('몽구스 접속 성공!');
