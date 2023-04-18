@@ -147,9 +147,19 @@ const addOrder = async (req, res) => {
   }
 };
 
+const getAllOrder = async (req, res) => {
+  try {
+    const order = await Order.find({});
+    res.status(200).json(order);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('주문 부르기 실패(서버에러)');
+  }
+};
 // 카트에서 여러 상품을 가지고 주문
 module.exports = {
   addOrder,
+  getAllOrder,
 };
 
 // // 모든 주문 조회

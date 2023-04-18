@@ -3,6 +3,7 @@ const multer = require('multer');
 const fs = require('fs');
 
 const { createProduct, getAllProducts, deleteProduct, modifyProduct } = require('../controllers/productController');
+const { getAllOrder } = require('../controllers/orderController');
 
 // ------------------- multer, 이미지 저장 관련 -------------------
 const dir = './uploads';
@@ -40,6 +41,9 @@ router.post('/productlist/modify/:productId', upload.array('img'), modifyProduct
 
 // 상품리스트 페이지에서 상품 삭제
 router.post('/productlist/delete/:productId', deleteProduct);
+
+// 전체 주문 리스트
+router.get('/orderlist', getAllOrder);
 
 // 전체 주문 리스트 /admin/orderlist
 // router.get('/orderlist', getOrderList);
