@@ -1,5 +1,4 @@
 const Cart = require('../models/cart');
-const user = require('../models/user');
 const User = require('../models/user');
 
 // ---------------------------- 장바구니 정보 조회(전체 상품 데이터, length) ----------------------------
