@@ -17,8 +17,10 @@ const LOGIN_WRONG_PASSWORD_MSG = '비밀번호가 틀렸습니다.';
 const LOGIN_UNEXPECTED_MSG = '로그인 실패, 알 수 없는 문제 발생';
 const LOGIN_SUCCESS_MSG = '로그인 완료!';
 const FINDINFO_UNEXPECTED_MSG = '회원 정보 찾기 실패, 알 수 없는 문제 발생';
-const EDITINFO_SUCCESS_MSG = '회원 정보 수정 성공!';
+const EDITINFO_SUCCESS_MSG = '회원 정보 수정 완료!';
 const EDITINFO_UNEXPECTED_MSG = '회원 정보 수정 실패, 알 수 없는 문제 발생';
+const DELETEINFO_SUCCESS_MSG = '회원 탈퇴 완료. FOVE를 이용해 주셔서 감사합니다!';
+const DELETEINFO_UNEXPECTED_MSG = '회원 탈퇴 실패, 알 수 없는 문제 발생';
 
 // 이름에 * 처리하는 함수
 const encodingName = (name) => {
@@ -193,6 +195,17 @@ const editUserInfo = async (req, res) => {
   }
 };
 
+// 회원 정보 삭제
+const deleteUserInfo = async (req, res) => {
+  try {
+    await User.deleteOne({ id: req.body.id });
+    res.status(200).json(DELETEINFO_SUCCESS_MSG);
+  } catch (err) {
+    console.error(err);
+    console.log(DELETEINFO_UNEXPECTED_MSG);
+  }
+};
+
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 
 // // Redux 데이터를 가지고 오는 컨트롤러
@@ -213,5 +226,6 @@ module.exports = {
   verifyToken,
   getUserInfo,
   editUserInfo,
+  deleteUserInfo,
   // getUserData,
 };
