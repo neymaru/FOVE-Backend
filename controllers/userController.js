@@ -250,6 +250,25 @@ const getAddress = async (req, res) => {
   }
 };
 
+// 마이페이지 주소록 배송지주소 삭제하기
+const deleteAddress = async (req, res) => {
+  try {
+    const { userId, addressId } = req.body;
+    const myData = await User.findOne({ id: userId });
+    const myAddresses = myData.addresses;
+    const addressIndex = myAddresses.findIndex((address) => address._id.toString() === addressId);
+
+    myAddresses.splice(addressIndex, 1);
+    await myData.save();
+
+    res.status(200).json({ message: '배송지지주소 삭제 성공!', myAddresses });
+    console.log(myData);
+  } catch (err) {
+    console.error(err);
+    console.log('에러 발생(서버 문제)');
+  }
+};
+
 // /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // // Redux 데이터를 가지고 오는 컨트롤러
@@ -273,5 +292,6 @@ module.exports = {
   deleteUserInfo,
   addAddress,
   getAddress,
+  deleteAddress,
   // getUserData,
 };

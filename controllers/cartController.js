@@ -98,7 +98,6 @@ const removeCartItem = async (req, res) => {
       res.status(404).json('장바구니 없음');
       return;
     }
-    console.log(userCart);
 
     const updatedCart = await Cart.findOneAndUpdate(
       { _id: userCart._id },
