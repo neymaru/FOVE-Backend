@@ -8,9 +8,17 @@ const userSchema = new Schema(
     password: { type: String, require: true }, // 비밀번호
     name: { type: String, require: true }, // 이름
     phone: { type: String, require: true }, // 핸드폰 번호. 010xxxx0000 형식
-    address: { type: String }, // 주소. API 활용 예정
-    addressDetail: { type: String }, // 상세주소
-    zipCode: { type: String }, // 우편번호. API 활용 예정
+    addresses: [
+      {
+        destination: { type: String }, // 배송지명
+        recipient: { type: String }, // 수령인 이름
+        address: { type: String }, // 주소
+        addressDetail: { type: String }, // 상세주소
+        zipCode: { type: String }, // 우편번호
+        recipientPhone: { type: String }, // 수령인 번호. 프론트에서 하나로 합칠 예정
+        isDefault: { type: Boolean, default: false }, // 기본 주소 여부
+      },
+    ],
     points: { type: Number, default: 0 }, // 포인트
     createAt: { type: Date, default: Date.now }, // 가입일
     isActive: { type: Boolean, default: true }, // 활동 상태 여부(회원/탈퇴)
