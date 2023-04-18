@@ -19,6 +19,7 @@ const productRouter = require('./routes/product');
 const storeRouter = require('./routes/store');
 const registerRouter = require('./routes/register');
 const boardRouter = require('./routes/board');
+const mypageRouter = require('./routes/mypage');
 // const orderRouter = require('./routes/order');
 
 app.use('/cart', cartRouter);
@@ -30,6 +31,7 @@ app.use('/store', storeRouter);
 app.use('/register', registerRouter);
 app.use('/uploads', express.static('uploads'));
 app.use('/board', boardRouter);
+app.use('/mypage', mypageRouter);
 // app.use('/order', orderRouter);
 
 // ------------------- 미들웨어 -------------------
