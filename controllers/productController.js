@@ -4,7 +4,7 @@ const Product = require('../models/product');
 // 상품 등록
 const createProduct = async (req, res) => {
   try {
-    const { productCode, productName, price, category, size, detail } = req.body;
+    const { productCode, productName, price, category, size, detail } = JSON.parse(req.body.data);
     // req.body의 data 필드를 JSON으로 구문 분석하고 결과 객체를 분해하여 변수명과 일치하는 key 값의 값들을 각 변수들에 저장
     // 프론트에서 data라는 이름으로 JSON 형태로 보내기 때문에 req.body.data로 받아서 JSON.parse() 함수를 이용해 객체형태로 parsing
 
@@ -96,19 +96,22 @@ const getProductDetail = async (req, res) => {
 const modifyProduct = async (req, res) => {
   try {
     const { productId } = req.params;
-    const { prodCode, productName, price, size, color, category, stock, detail } = req.body;
+    const { productCode, productName, price, category, size, detail } = JSON.parse(req.body.data);
     const img = req.files.map((el) => el.originalname);
 
     const product = {
-      prodCode,
+      productCode,
       productName,
       price,
-      size,
-      color,
       category,
-      stock,
-      detail,
+      size: {
+        OS: size.OS || 0,
+        S: size.S || 0,
+        M: size.M || 0,
+        L: size.L || 0,
+      },
       img,
+      detail,
     };
 
     await Product.findByIdAndUpdate(productId, product, { new: true });
