@@ -1,6 +1,7 @@
 const Cart = require('../models/cart');
 const User = require('../models/user');
 
+<<<<<<< Updated upstream
 // ---------------------------- 장바구니 정보 조회(전체 상품 데이터, length) ----------------------------
 const getCartInfo = async (req, res) => {
   try {
@@ -20,11 +21,18 @@ const getCartInfo = async (req, res) => {
 // ---------------------------- 상품 상세페이지에서 해당상품 장바구니에 추가 ----------------------------
 const addProductToCart = async (req, res) => {
   try {
-    // req.boy의 상품 정보들을 구조분해 할당으로 매칭시켜 변수 저장
     const { userId } = req.params;
     const { productName, img, price, size, quantity, unitSumPrice } = req.body;
+=======
+// 상품 상세페이지에서 해당상품 장바구니에 추가
+const addProductToCart = async (req, res) => {
+  try {
+    const { productName, img, price, size, color, quantity, unitSumPrice } = req.body;
+    // req.boy의 상품 정보들을 구조분해 할당으로 매칭시켜 변수 저장
 
-    // req.body로 받은 상품 정보들을 product라는 객체 형태의 변수에 저장
+    const cart = await Cart.findOne({}); // [user DB의 cartId 이용하여 찾아야 함]
+>>>>>>> Stashed changes
+
     const product = {
       productName,
       img,
@@ -55,14 +63,6 @@ const addProductToCart = async (req, res) => {
       return;
     }
 
-    // cart는 생성 돼있는데 products 배열이 없거나 products 배열에 담긴 product가 없을 때
-    // if (!userCart.products || !userCart.products.length) {
-    //   userCart.products = [product];
-    //   await userCart.save();
-    //   res.status(200).json('장바구니 담기 성공2');
-    //   return; // 다음 코드 실행 안되게
-    // }
-
     // 장바구니에 상품이 있으면 추가하려는 상품과 동일한 옴션의 상품이 있는지 확인 후 sameProduct 배열에 저장
     const sameProduct = userCart.products.find(
       (productEl) => productName === productEl.productName && size === productEl.size,
@@ -91,18 +91,26 @@ const addProductToCart = async (req, res) => {
 // ---------------------------- 장바구니 특정 상품 하나 삭제 ----------------------------
 const removeCartItem = async (req, res) => {
   try {
+<<<<<<< Updated upstream
     const { userId, productId } = req.params;
 
     const userCart = await Cart.findOne({ user: userId });
     if (!userCart) {
       res.status(404).json('장바구니 없음');
       return;
+=======
+    const cart = await Cart.findOne();
+    if (!cart) {
+      res.status(200).json({ length: 0 }); // 장바구니가 비어있으면 lenght만 넘기기
+    } else {
+      res.status(200).json({ products: cart.products, length: cart.products.length }); // 장바구니에 상품이 있으면 상품 데이터와 length 넘기기
+>>>>>>> Stashed changes
     }
 
     const updatedCart = await Cart.findOneAndUpdate(
       { _id: userCart._id },
       { $pull: { products: { _id: productId } } },
-      { new: true }, // 업데이트된 내용 반환을 위해 new: true
+      { new: true },
     );
     res.status(200).json({ messege: '장바구이에서 해당 상품 삭제 성공', updatedCart });
   } catch (err) {
@@ -124,7 +132,6 @@ const cleanCart = async (req, res) => {
 
     userCart.products = [];
     await userCart.save();
-    // const updatedCart = await Cart.findOneAndUpdate({ _id: cart._id }, { $set: { products: [] } }, { new: true });
 
     res.status(200).json({ messege: '장바구이에서 비우기 성공', userCart });
   } catch (err) {
@@ -178,7 +185,7 @@ const cartProductQtyMinus = async (req, res) => {
       return res.status(404).json('일치하는 상품 없음');
     }
 
-    if (product.quantity === 0) return res.send('더이상 감소시킬 수 없음'); // quantity 가 0보다 작아지지 않도록 함
+    if (product.quantity === 0) return res.send('더이상 감소시킬 수 없음');
     product.quantity -= 1;
     product.unitSumPrice = product.price * product.quantity;
 
@@ -189,6 +196,31 @@ const cartProductQtyMinus = async (req, res) => {
     res.status(500).json('알 수 없는 에러');
   }
 };
+
+// ------------------- 예비 코드 -------------------
+// 장바구니에 상품 추가
+// const addProductToCart = async (req, res) => {
+//   try {
+//     const { productName, img, price, size, color, quantity } = req.body;
+
+//     // 장바구니 내 상품별 금액 합계
+//     const products = req.body.products.map((product) => ({
+//       ...product,
+//       unitSumPrice: product.price * product.quantity,
+//     }));
+
+//     const cart = new Cart({ products });
+
+//     const cartTotalPrice = products.reduce((total, product) => total + product.unitSumPrice, 0);
+//     cart.cartTotalPrice = cartTotalPrice;
+
+//     await cart.save();
+//     res.status(200).send('장바구니 담기 성공');
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send('장바구니 담기 실패');
+//   }
+// };
 
 module.exports = {
   addProductToCart,
