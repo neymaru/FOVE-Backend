@@ -140,7 +140,7 @@ const addOrder = async (req, res) => {
     }
     // const populatedOrder = await Order.findById(userId).populate('user', 'name');
     // res.status(200).json(populatedOrder);
-    res.status(200).json('주문하기 성공 최두루 아이스크림 사줘');
+    res.status(200).json('주문하기 성공');
   } catch (err) {
     console.error(err);
     res.status(500).json('주문하기 실패');
