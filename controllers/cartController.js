@@ -1,7 +1,6 @@
 const Cart = require('../models/cart');
 const User = require('../models/user');
 
-<<<<<<< Updated upstream
 // ---------------------------- 장바구니 정보 조회(전체 상품 데이터, length) ----------------------------
 const getCartInfo = async (req, res) => {
   try {
@@ -23,15 +22,6 @@ const addProductToCart = async (req, res) => {
   try {
     const { userId } = req.params;
     const { productName, img, price, size, quantity, unitSumPrice } = req.body;
-=======
-// 상품 상세페이지에서 해당상품 장바구니에 추가
-const addProductToCart = async (req, res) => {
-  try {
-    const { productName, img, price, size, color, quantity, unitSumPrice } = req.body;
-    // req.boy의 상품 정보들을 구조분해 할당으로 매칭시켜 변수 저장
-
-    const cart = await Cart.findOne({}); // [user DB의 cartId 이용하여 찾아야 함]
->>>>>>> Stashed changes
 
     const product = {
       productName,
@@ -91,20 +81,12 @@ const addProductToCart = async (req, res) => {
 // ---------------------------- 장바구니 특정 상품 하나 삭제 ----------------------------
 const removeCartItem = async (req, res) => {
   try {
-<<<<<<< Updated upstream
     const { userId, productId } = req.params;
 
     const userCart = await Cart.findOne({ user: userId });
     if (!userCart) {
       res.status(404).json('장바구니 없음');
       return;
-=======
-    const cart = await Cart.findOne();
-    if (!cart) {
-      res.status(200).json({ length: 0 }); // 장바구니가 비어있으면 lenght만 넘기기
-    } else {
-      res.status(200).json({ products: cart.products, length: cart.products.length }); // 장바구니에 상품이 있으면 상품 데이터와 length 넘기기
->>>>>>> Stashed changes
     }
 
     const updatedCart = await Cart.findOneAndUpdate(
